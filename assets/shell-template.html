@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__PR_ATLAS_TITLE__</title>
+<style>
+  :root {
+    --bg: #0d1117; --bg-raised: #161b22; --bg-hover: #1c2330;
+    --border: #2d333b; --text: #e6edf3; --text-dim: #8b949e;
+    --accent: #58a6ff; --accent-soft: rgba(88,166,255,.12);
+  }
+  [data-theme="light"] {
+    --bg: #f6f8fa; --bg-raised: #ffffff; --bg-hover: #eef1f5;
+    --border: #d0d7de; --text: #1f2328; --text-dim: #59636e;
+    --accent: #0969da; --accent-soft: rgba(9,105,218,.08);
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    display: flex; flex-direction: column;
+  }
+  header {
+    padding: 18px 24px 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-raised);
+  }
+  .pr-title {
+    font-size: 19px; font-weight: 600; margin: 0 0 4px;
+    display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  }
+  .pr-number { color: var(--text-dim); font-weight: 400; text-decoration: none; }
+  .pr-number:hover { color: var(--accent); }
+  .pr-meta {
+    color: var(--text-dim); font-size: 13px; margin-bottom: 14px;
+    display: flex; gap: 16px; flex-wrap: wrap;
+  }
+  .pr-meta code {
+    background: var(--accent-soft); color: var(--accent);
+    padding: 1px 6px; border-radius: 4px; font-size: 12px;
+  }
+  .stat-add { color: #3fb950; } .stat-del { color: #f85149; }
+  [data-theme="light"] .stat-add { color: #1a7f37; }
+  [data-theme="light"] .stat-del { color: #cf222e; }
+  nav {
+    display: flex; gap: 4px; flex-wrap: wrap; align-items: flex-end;
+  }
+  nav button {
+    appearance: none; border: 1px solid transparent; border-bottom: none;
+    background: none; color: var(--text-dim); cursor: pointer;
+    font: inherit; font-size: 13px; padding: 8px 14px;
+    border-radius: 6px 6px 0 0; margin-bottom: -1px;
+  }
+  nav button:hover { color: var(--text); background: var(--bg-hover); }
+  nav button.active {
+    color: var(--accent); background: var(--bg);
+    border-color: var(--border);
+  }
+  nav .spacer { flex: 1; }
+  .theme-toggle {
+    appearance: none; background: none; border: 1px solid var(--border);
+    color: var(--text-dim); border-radius: 6px; cursor: pointer;
+    font-size: 12px; padding: 4px 10px; margin-bottom: 6px;
+  }
+  .theme-toggle:hover { color: var(--text); }
+  .view-desc {
+    padding: 10px 24px; color: var(--text-dim); font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    display: flex; gap: 16px; align-items: baseline; flex-wrap: wrap;
+  }
+  .view-desc a { color: var(--accent); text-decoration: none; font-size: 12px; }
+  .view-desc a:hover { text-decoration: underline; }
+  main { flex: 1; position: relative; }
+  iframe {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    border: 0; background: var(--bg);
+  }
+  .empty {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    color: var(--text-dim);
+  }
+</style>
+</head>
+<body>
+<script>
+  const DATA = __PR_ATLAS_DATA__;
+</script>
+<header>
+  <h1 class="pr-title">
+    <span id="pr-title"></span>
+    <a class="pr-number" id="pr-number" target="_blank" rel="noopener"></a>
+  </h1>
+  <div class="pr-meta" id="pr-meta"></div>
+  <nav id="tabs"></nav>
+</header>
+<div class="view-desc" id="view-desc"></div>
+<main id="stage"></main>
+<script>
+(function () {
+  const pr = DATA.pr || {};
+  const artifacts = DATA.artifacts || [];
+  const $ = (id) => document.getElementById(id);
+
+  document.title = (pr.number ? `PR #${pr.number}: ` : "") + (pr.title || "PR walkthrough");
+  $("pr-title").textContent = pr.title || "PR walkthrough";
+  const num = $("pr-number");
+  if (pr.number) {
+    num.textContent = "#" + pr.number;
+    if (pr.url) num.href = pr.url; else num.removeAttribute("href");
+  } else num.remove();
+
+  const meta = $("pr-meta");
+  const bits = [];
+  if (pr.author) bits.push(`<span>by ${esc(pr.author)}</span>`);
+  if (pr.base || pr.head) bits.push(`<span><code>${esc(pr.head || "?")}</code> → <code>${esc(pr.base || "?")}</code></span>`);
+  const s = pr.stats || {};
+  if (s.files != null) bits.push(`<span>${s.files} file${s.files === 1 ? "" : "s"}</span>`);
+  if (s.additions != null) bits.push(`<span class="stat-add">+${s.additions}</span>`);
+  if (s.deletions != null) bits.push(`<span class="stat-del">−${s.deletions}</span>`);
+  bits.push(`<span>orientation aid — not a review</span>`);
+  meta.innerHTML = bits.join("");
+
+  // Theme toggle, matched to artifact content: archify/anatomy pages ship dark+light.
+  const nav = $("tabs");
+  const toggle = document.createElement("button");
+  toggle.className = "theme-toggle";
+  toggle.textContent = "◐ theme";
+  toggle.onclick = () => {
+    const cur = document.documentElement.getAttribute("data-theme") === "light" ? "" : "light";
+    if (cur) document.documentElement.setAttribute("data-theme", "light");
+    else document.documentElement.removeAttribute("data-theme");
+    document.querySelectorAll("main iframe").forEach(f => {
+      try { f.contentDocument && f.contentDocument.documentElement.setAttribute("data-theme", cur || "dark"); } catch (e) {}
+    });
+  };
+
+  const stage = $("stage");
+  const desc = $("view-desc");
+  let activeBtn = null;
+
+  function esc(str) {
+    return String(str).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  artifacts.forEach((a, i) => {
+    const btn = document.createElement("button");
+    btn.textContent = a.title || a.id || `View ${i + 1}`;
+    btn.onclick = () => select(a, btn);
+    nav.appendChild(btn);
+    if (i === 0) { select(a, btn); }
+  });
+  const spacer = document.createElement("div");
+  spacer.className = "spacer";
+  nav.appendChild(spacer);
+  nav.appendChild(toggle);
+
+  function select(a, btn) {
+    if (activeBtn) activeBtn.classList.remove("active");
+    btn.classList.add("active");
+    activeBtn = btn;
+    desc.innerHTML =
+      `<span>${esc(a.description || "")}</span>` +
+      `<a href="${esc(a.path)}" target="_blank" rel="noopener">open in new tab ↗</a>`;
+    stage.innerHTML = "";
+    // Lazy src: only the active iframe loads, keeps first paint fast on big atlases.
+    const f = document.createElement("iframe");
+    f.src = a.path;
+    f.title = a.title || a.id;
+    stage.appendChild(f);
+  }
+
+  if (!artifacts.length) {
+    stage.innerHTML = `<div class="empty">No artifacts in manifest.json</div>`;
+  }
+})();
+</script>
+</body>
+</html>
