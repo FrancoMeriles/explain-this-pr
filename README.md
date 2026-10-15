@@ -19,10 +19,10 @@
 </p>
 
 <p align="center">
-  <img src=".github/assets/atlas-shell.png" width="720" alt="A generated PR walkthrough: a dark tabbed page titled with the PR, showing an explorable tree diagram of the changed content model.">
+  <img src=".github/assets/atlas-diagram.png" width="880" alt="A generated dataflow view for a real PR: staged pipeline from the content file through the page render and the next/image optimizer out to i.ytimg.com and youtube.com.">
 </p>
 
-<p align="center"><sub>A real atlas generated for a small feature PR: tabbed shell with the PR header and an explorable, repo-linked diagram.</sub></p>
+<p align="center"><sub>A real atlas view generated for a small feature PR — every node and flow cites source lines at the pinned commit.</sub></p>
 
 ---
 
@@ -60,6 +60,10 @@ The agent gathers the diff and discussion, picks the views the change actually n
 - **Diagram views matched to the diff** — sequence for API calls, lifecycle for state changes, erd for schemas, architecture/tree for structure, dataflow for pipelines, workflow for user-facing flows. Each one is a validated, explorable HTML page with dark/light themes and image/SVG export, authored by [Archify](https://skills.sh/tt-a1i/archify/archify) from repository evidence at the pinned commit.
 - **An optional isometric figure** — a crafted physical machine whose mechanism *is* the PR's core idea (a ratchet for retry backoff, a sluice for rate limiting), built by [Anatomy](https://skills.sh/wheresryan22/anatomy/anatomy).
 - **A shell** — `index.html` with the PR's title, author, branches, diff stats, and one tab per artifact. Everything is a local file; it opens straight from disk.
+
+<p align="center">
+  <img src=".github/assets/atlas-shell.png" width="720" alt="The assembled walkthrough shell: PR title and diff stats on top, tabs per view, and the diagram rendered below.">
+</p>
 
 ## How it works
 
