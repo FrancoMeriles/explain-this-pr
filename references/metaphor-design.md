@@ -45,12 +45,12 @@ Default is **Figure** (40–80 parts, one mechanism, at most one WebGL layer). S
 ## Build location
 
 ```
-<repo>/.pr-atlas/figure-src/
+<repo>/.explain-this-pr/pr-<n>/figure-src/
 ├── build.mjs    # imports <anatomy>/kit/iso-kit.mjs
 └── model.mjs    # the pure truth module, if the figure needs one
 ```
 
-`node build.mjs` writes the page; copy it to `<repo>/.pr-atlas/figure.html` (build `--light` too if the user wants both themes inline — anatomy pages ship both).
+`node build.mjs` writes the page; copy it to `<repo>/.explain-this-pr/pr-<n>/figure.html` (build `--light` too if the user wants both themes inline — anatomy pages ship both).
 
 ## Skip conditions
 

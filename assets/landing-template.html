@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>__PR_ATLAS_TITLE__</title>
+<title>__WALKTHROUGH_TITLE__</title>
 <style>
   :root {
     --bg: #0d1117; --bg-raised: #161b22; --bg-hover: #1c2330;
@@ -55,11 +55,11 @@
 </head>
 <body>
 <script>
-  const DATA = __PR_ATLAS_LANDING__;
+  const DATA = __WALKTHROUGH_LANDING__;
 </script>
 <button class="toggle" onclick="document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'light' ? '' : 'light'">◐ theme</button>
 <div class="wrap">
-  <h1>PR Atlas</h1>
+  <h1>Explain this PR</h1>
   <p class="sub" id="sub"></p>
   <div id="list"></div>
 </div>
@@ -67,7 +67,7 @@
 (function () {
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const entries = DATA.entries || [];
-  document.title = `PR Atlas — ${DATA.repo || "walkthroughs"}`;
+  document.title = `Explain this PR — ${DATA.repo || "walkthroughs"}`;
   document.getElementById("sub").innerHTML =
     `<code>${esc(DATA.repo || "")}</code> ${entries.length} walkthrough${entries.length === 1 ? "" : "s"} — orientation aids, not reviews`;
 

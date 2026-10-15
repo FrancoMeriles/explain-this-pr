@@ -39,7 +39,7 @@ git fetch origin pull/<n>/head                 # GitHub; GitLab: merge-requests/
 git worktree add "$(mktemp -d)/head" FETCH_HEAD --detach
 ```
 
-The worktree shares `.git` (same objects, same origin) and sits at the PR commit without touching the user's working tree or current branch. Read source files and run `finalize --repo-root <worktree>` there; write the report into the **main** repo's `.pr-atlas/pr-<n>/`. Remove it when done: `git worktree remove <path> --force`.
+The worktree shares `.git` (same objects, same origin) and sits at the PR commit without touching the user's working tree or current branch. Read source files and run `finalize --repo-root <worktree>` there; write the report into the **main** repo's `.explain-this-pr/pr-<n>/`. Remove it when done: `git worktree remove <path> --force`.
 
 Before cloning, **search for an existing checkout first** — repos often live a few levels deep (e.g. `~/Documents/.../<org>/<repo>`), so a shallow `find` misses them:
 
@@ -53,12 +53,12 @@ find ~ -maxdepth 6 -name ".git" -type d -not -path "*/Library/*" -not -path "*/n
 
 Never clone silently into the user's home or workspace. If the repo isn't found, ask where the work should live:
 
-- **Persistent clone** — for public repos, or when the user wants the repo around anyway. `gh repo clone owner/repo <path>` (prefer `gh` over `git clone`: it carries auth, which matters for private repos where HTTPS clone fails and SSH may not be set up). Get the PR head in a detached worktree as above, then build the atlas inside the repo at `.pr-atlas/pr-<n>/`.
-- **Temp clone (ephemeral)** — for reviewing changes without keeping the repo. Clone into `mktemp -d`, run evidence and `finalize` there with `.pr-atlas/pr-<n>/` inside the temp clone, then **move the finished `pr-<n>/` folder out** to the report location and **delete the temp clone**. The artifacts are self-contained HTML; nothing else is needed after `finalize` passes.
+- **Persistent clone** — for public repos, or when the user wants the repo around anyway. `gh repo clone owner/repo <path>` (prefer `gh` over `git clone`: it carries auth, which matters for private repos where HTTPS clone fails and SSH may not be set up). Get the PR head in a detached worktree as above, then build the atlas inside the repo at `.explain-this-pr/pr-<n>/`.
+- **Temp clone (ephemeral)** — for reviewing changes without keeping the repo. Clone into `mktemp -d`, run evidence and `finalize` there with `.explain-this-pr/pr-<n>/` inside the temp clone, then **move the finished `pr-<n>/` folder out** to the report location and **delete the temp clone**. The artifacts are self-contained HTML; nothing else is needed after `finalize` passes.
 
-Default report location for temp clones: `pr-atlas-<repo>-pr<n>/` under the user's current working directory (or a path the user names). Tell the user explicitly where the report landed and that the clone was removed.
+Default report location for temp clones: `explain-this-pr-<repo>-pr<n>/` under the user's current working directory (or a path the user names). Tell the user explicitly where the report landed and that the clone was removed.
 
-A clone is disposable; the `.pr-atlas` report is not. The two must part ways before the session ends — either the clone stays (persistent) or the report does (temp).
+A clone is disposable; the `.explain-this-pr` report is not. The two must part ways before the session ends — either the clone stays (persistent) or the report does (temp).
 
 ## `meta.repository.url`: use canonical HTTPS
 

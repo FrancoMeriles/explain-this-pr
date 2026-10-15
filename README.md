@@ -1,4 +1,4 @@
-<h1 align="center">PR Atlas</h1>
+<h1 align="center">Explain this PR</h1>
 
 <p align="center"><b>An agent skill that turns a pull request into an interactive walkthrough.</b><br>Validated Archify diagrams plus an optional crafted isometric Anatomy figure,<br>assembled into a standalone local HTML site.</p>
 
@@ -19,22 +19,22 @@
 </p>
 
 <p align="center">
-  <img src=".github/assets/atlas-diagram.png" width="880" alt="A generated dataflow view for a real PR: staged pipeline from the content file through the page render and the next/image optimizer out to i.ytimg.com and youtube.com.">
+  <img src=".github/assets/walkthrough-diagram.png" width="880" alt="A generated dataflow view for a real PR: staged pipeline from the content file through the page render and the next/image optimizer out to i.ytimg.com and youtube.com.">
 </p>
 
 <p align="center"><sub>A real atlas view generated for a small feature PR — every node and flow cites source lines at the pinned commit.</sub></p>
 
 ---
 
-Point your agent at a pull request and PR Atlas builds a standalone site that orients a reviewer: what the change makes true, how the pieces fit, and where data and control actually flow. It is an **orientation aid, not a code review** — no findings, no approve/reject, just maps.
+Point your agent at a pull request and it builds a standalone site that orients a reviewer: what the change makes true, how the pieces fit, and where data and control actually flow. It is an **orientation aid, not a code review** — no findings, no approve/reject, just maps.
 
 ## Install
 
 ```sh
-npx skills add FrancoMeriles/pr-atlas -g
+npx skills add FrancoMeriles/explain-this-pr -g
 ```
 
-The atlas is rendered by two other skills — install them too:
+The walkthrough is rendered by two other skills — install them too:
 
 ```sh
 npx skills add tt-a1i/archify@archify -g          # required: all diagrams
@@ -44,16 +44,16 @@ npx skills add wheresryan22/anatomy@anatomy -g    # optional: the isometric figu
 ## Usage
 
 ```text
-make me a pr atlas of https://github.com/owner/repo/pull/123
+explain this pr: https://github.com/owner/repo/pull/123
 ```
 
 or, standing in a checkout:
 
 ```text
-make me a pr atlas of this branch / PR #123
+explain this pr: this branch / PR #123
 ```
 
-The agent gathers the diff and discussion, picks the views the change actually needs, generates each diagram against the real repository (evidence-linked back to source lines), and assembles everything into `.pr-atlas/pr-<n>/index.html` inside the repo. Multiple atlases coexist — a `.pr-atlas/index.html` landing page lists them all.
+The agent gathers the diff and discussion, picks the views the change actually needs, generates each diagram against the real repository (evidence-linked back to source lines), and assembles everything into `.explain-this-pr/pr-<n>/index.html` inside the repo. Multiple atlases coexist — a `.explain-this-pr/index.html` landing page lists them all.
 
 ## What it makes
 
@@ -62,7 +62,7 @@ The agent gathers the diff and discussion, picks the views the change actually n
 - **A shell** — `index.html` with the PR's title, author, branches, diff stats, and one tab per artifact. Everything is a local file; it opens straight from disk.
 
 <p align="center">
-  <img src=".github/assets/atlas-shell.png" width="720" alt="The assembled walkthrough shell: PR title and diff stats on top, tabs per view, and the diagram rendered below.">
+  <img src=".github/assets/walkthrough-shell.png" width="720" alt="The assembled walkthrough shell: PR title and diff stats on top, tabs per view, and the diagram rendered below.">
 </p>
 
 ## How it works

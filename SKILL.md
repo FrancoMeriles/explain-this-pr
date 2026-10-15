@@ -1,15 +1,15 @@
 ---
-name: pr-atlas
+name: explain-this-pr
 description: "Generate an interactive PR walkthrough site that orients a reviewer: validated Archify diagrams (architecture, dataflow, sequence, lifecycle, erd, class, tree, workflow) plus an optional crafted isometric Anatomy figure that explains the change's core idea as a physical machine, assembled into a standalone local HTML atlas. Use when someone wants to understand, explain, or onboard a reviewer to a pull request, branch diff, or changeset — a visual tour of what changed, how data and control flow move through it, and why. Works from a checked-out branch or a GitHub PR via gh. This is not a code review tool: it produces orientation maps, not findings, approvals, or critiques."
 license: MIT
 compatibility: "Needs Node.js 20.10+ and Chrome/Chromium (archify's browser-check and anatomy's captures). Git required; gh preferred for PR metadata but optional. Requires the archify skill installed; the anatomy skill only for the optional figure."
 metadata:
-  version: "1.0"
+  version: "1.1.0"
 ---
 
-# PR Atlas
+# Explain this PR
 
-Build a standalone HTML site at `<repo>/.pr-atlas/pr-<n>/index.html` (one folder per PR, so atlases never overwrite each other; use `branch-<slug>/` when there's no PR number) that teaches a pull request to its reviewer through generated visuals:
+Build a standalone HTML site at `<repo>/.explain-this-pr/pr-<n>/index.html` (one folder per PR, so atlases never overwrite each other; use `branch-<slug>/` when there's no PR number) that teaches a pull request to its reviewer through generated visuals:
 
 - **Diagrams via the `archify` skill** — validated, explorable HTML diagrams (inline SVG, dark/light themes, exportable) authored from real repository evidence.
 - **A hero figure via the `anatomy` skill** — an optional crafted isometric machine whose working *is* the PR's core mechanism (a lock for cache keys, a valve for backpressure).
@@ -17,7 +17,7 @@ Build a standalone HTML site at `<repo>/.pr-atlas/pr-<n>/index.html` (one folder
 
 ## Dependencies
 
-Paths below use placeholders: `<pr-atlas>` is the directory containing this SKILL.md, `<archify>` and `<anatomy>` are those skills' install directories (usually `~/.agents/skills/<name>/` when installed via `npx skills add`, or the agent's skills directory).
+Paths below use placeholders: `<explain-this-pr>` is the directory containing this SKILL.md, `<archify>` and `<anatomy>` are those skills' install directories (usually `~/.agents/skills/<name>/` when installed via `npx skills add`, or the agent's skills directory).
 
 Run this preflight once at the start, before any evidence work:
 
@@ -50,7 +50,7 @@ Work these phases in order. Phases 1–3 are cheap and decide everything downstr
 
 Read [pr-evidence](references/pr-evidence.md). Collect the diff, commit list, PR description and existing review comments (via `gh` when available, plain `git` otherwise), and identify which subsystems the change touches. Diagrams authored without this evidence become guesses.
 
-Archify needs a clean checkout at the PR head for `--repo-root` — but **never move the user's checkout**: inspect the PR head in a detached `git worktree` instead (see "Getting the repo"). If the user gave a PR URL and the repo isn't checked out locally, search for it first, then **ask the user** — persistent clone (report lives in `<repo>/.pr-atlas/pr-<n>/`) or temp clone (ephemeral checkout for evidence only; the report is moved out and the clone deleted). Details in "Getting the repo" in that reference.
+Archify needs a clean checkout at the PR head for `--repo-root` — but **never move the user's checkout**: inspect the PR head in a detached `git worktree` instead (see "Getting the repo"). If the user gave a PR URL and the repo isn't checked out locally, search for it first, then **ask the user** — persistent clone (report lives in `<repo>/.explain-this-pr/pr-<n>/`) or temp clone (ephemeral checkout for evidence only; the report is moved out and the clone deleted). Details in "Getting the repo" in that reference.
 
 ### 2. Size the PR
 
@@ -80,30 +80,30 @@ For each chosen view, follow the **archify** skill's authoring workflow end to e
 - Run `node <archify>/bin/archify.mjs finalize <type> <candidate.json> <output.html> --repo-root <repo-root> --quality showcase --json` — `<repo-root>` is the PR-head worktree.
 - A non-zero exit is never success; repair per archify's delivery contract.
 
-Write candidates under `<repo>/.pr-atlas/pr-<n>/work/` and copy each passing HTML into `<repo>/.pr-atlas/pr-<n>/diagrams/<view-slug>.html`. Do not edit finalized HTML — copy it whole.
+Write candidates under `<repo>/.explain-this-pr/pr-<n>/work/` and copy each passing HTML into `<repo>/.explain-this-pr/pr-<n>/diagrams/<view-slug>.html`. Do not edit finalized HTML — copy it whole.
 
 ### 6. Build the figure (if chosen)
 
-Read [metaphor-design](references/metaphor-design.md) to map the PR's core mechanism to a physical object, then follow the **anatomy** skill's workflow — invoke it or read `<anatomy>/SKILL.md`. Build under `<repo>/.pr-atlas/pr-<n>/figure-src/` with a `build.mjs` that imports anatomy's kit (`<anatomy>/kit/iso-kit.mjs`), and copy the resulting page to `<repo>/.pr-atlas/pr-<n>/figure.html`. Default size is *Figure*. The figure depicts the **after** state — what the PR makes true.
+Read [metaphor-design](references/metaphor-design.md) to map the PR's core mechanism to a physical object, then follow the **anatomy** skill's workflow — invoke it or read `<anatomy>/SKILL.md`. Build under `<repo>/.explain-this-pr/pr-<n>/figure-src/` with a `build.mjs` that imports anatomy's kit (`<anatomy>/kit/iso-kit.mjs`), and copy the resulting page to `<repo>/.explain-this-pr/pr-<n>/figure.html`. Default size is *Figure*. The figure depicts the **after** state — what the PR makes true.
 
 ### 7. Assemble and verify
 
-Write `<repo>/.pr-atlas/pr-<n>/manifest.json` listing every artifact (see schema below), then:
+Write `<repo>/.explain-this-pr/pr-<n>/manifest.json` listing every artifact (see schema below), then:
 
 ```bash
-node <pr-atlas>/scripts/assemble.mjs <repo>/.pr-atlas/pr-<n>/manifest.json
+node <explain-this-pr>/scripts/assemble.mjs <repo>/.explain-this-pr/pr-<n>/manifest.json
 ```
 
-It writes `index.html` next to the manifest, and also regenerates `<repo>/.pr-atlas/index.html` — a landing page listing every `pr-*/` or `branch-*/` folder that carries a manifest. Check the manifest warnings for missing artifact files, then verify the shell renders in a real browser:
+It writes `index.html` next to the manifest, and also regenerates `<repo>/.explain-this-pr/index.html` — a landing page listing every `pr-*/` or `branch-*/` folder that carries a manifest. Check the manifest warnings for missing artifact files, then verify the shell renders in a real browser:
 
 ```bash
-cd <repo>/.pr-atlas/pr-<n> && node <anatomy>/scripts/capture.mjs index.html \
+cd <repo>/.explain-this-pr/pr-<n> && node <anatomy>/scripts/capture.mjs index.html \
   --out shots/index.png --width 1440 --height 900
 ```
 
 The capture prints console errors and sideways-scroll warnings; read the PNG to confirm the header, tabs, and first artifact actually painted.
 
-If the work ran in a temp clone, move the finished `pr-<n>/` folder to the report location (default `pr-atlas-<repo>-pr<n>/` in the user's working directory) **before deleting the clone**, and delete the clone. Confirm the moved `index.html` still opens — its artifact paths are relative, so the folder must travel as a unit.
+If the work ran in a temp clone, move the finished `pr-<n>/` folder to the report location (default `explain-this-pr-<repo>-pr<n>/` in the user's working directory) **before deleting the clone**, and delete the clone. Confirm the moved `index.html` still opens — its artifact paths are relative, so the folder must travel as a unit.
 
 ## Manifest schema
 
@@ -143,7 +143,7 @@ If the work ran in a temp clone, move the finished `pr-<n>/` folder to the repor
 
 Reply in the user's language, briefly. Lead with a clickable link to `index.html` (absolute path, `<...>` if it contains spaces), then one line per artifact saying what view it teaches. State what was verified: each archify diagram carries its own `finalize` receipt; the figure carries anatomy's audit; the shell was captured or explicitly reported as unverified. If the figure was skipped, say so in half a sentence.
 
-Example: `Created [PR #482 walkthrough](/abs/path/.pr-atlas/pr-482/index.html) — 3 diagrams (overview, retry sequence, backoff lifecycle) plus the ratchet figure. Archify gates passed; shell screenshot verified.`
+Example: `Created [PR #482 walkthrough](/abs/path/.explain-this-pr/pr-482/index.html) — 3 diagrams (overview, retry sequence, backoff lifecycle) plus the ratchet figure. Archify gates passed; shell screenshot verified.`
 
 ## Boundaries
 

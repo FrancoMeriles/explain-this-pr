@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Assemble a pr-atlas index.html from a manifest.json, then rebuild the
-// .pr-atlas landing page listing every sibling PR folder that has a manifest.
+// Assemble an explain-this-pr index.html from a manifest.json, then rebuild the
+// .explain-this-pr landing page listing every sibling PR folder that has a manifest.
 //
 //   node assemble.mjs <manifest.json> [output.html]
 //
@@ -45,22 +45,22 @@ for (const a of order) {
 }
 
 const title = manifest.pr?.title
-  ? `PR Atlas — ${manifest.pr.title}`
-  : "PR Atlas";
+  ? `Explain this PR — ${manifest.pr.title}`
+  : "Explain this PR";
 
 const inline = (obj) => JSON.stringify(obj).replace(/</g, "\\u003c"); // safe inside <script>
 
 let html = readFileSync(TEMPLATE, "utf8");
 html = html
-  .replace("__PR_ATLAS_DATA__", inline({ pr: manifest.pr || {}, artifacts: order }))
-  .replaceAll("__PR_ATLAS_TITLE__", title.replace(/[&<>]/g, ""));
+  .replace("__WALKTHROUGH_DATA__", inline({ pr: manifest.pr || {}, artifacts: order }))
+  .replaceAll("__WALKTHROUGH_TITLE__", title.replace(/[&<>]/g, ""));
 
 writeFileSync(out, html);
 console.log(`wrote ${out}`);
 console.log(`artifacts: ${order.map((a) => a.id).join(", ")}`);
 
 // --- Landing page over every sibling folder that carries a manifest ---------
-// Layout: <repo>/.pr-atlas/pr-<n>/manifest.json -> landing at <repo>/.pr-atlas/index.html
+// Layout: <repo>/.explain-this-pr/pr-<n>/manifest.json -> landing at <repo>/.explain-this-pr/index.html
 const atlasRoot = dirname(manifestDir);
 const entries = [];
 for (const name of readdirSync(atlasRoot, { withFileTypes: true })) {
@@ -86,8 +86,8 @@ if (entries.length) {
   const repo = m ? m[1].replace(/^https?:\/\//, "") : basename(dirname(atlasRoot));
   let landing = readFileSync(LANDING_TEMPLATE, "utf8");
   landing = landing
-    .replace("__PR_ATLAS_LANDING__", inline({ repo, entries }))
-    .replaceAll("__PR_ATLAS_TITLE__", `PR Atlas — ${repo}`);
+    .replace("__WALKTHROUGH_LANDING__", inline({ repo, entries }))
+    .replaceAll("__WALKTHROUGH_TITLE__", `Explain this PR — ${repo}`);
   const landingPath = join(atlasRoot, "index.html");
   writeFileSync(landingPath, landing);
   console.log(`wrote ${landingPath} (${entries.length} walkthrough${entries.length === 1 ? "" : "s"})`);
